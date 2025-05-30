@@ -121,10 +121,11 @@ async def verify_user_token(current_user: str = Depends(verify_token)):
     return {"username": current_user, "authenticated": True}
 
 @app.get("/api/dashboard")
-async def dashboard(current_user: str = Depends(verify_token)):
+async def dashboard(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    username = verify_token(credentials)
     return {
-        "message": f"Bem-vindo ao dashboard, {current_user}!",
-        "user": current_user,
+        "message": f"Bem-vindo ao dashboard, {username}!",
+        "user": username,
         "timestamp": datetime.now().isoformat()
     }
 
