@@ -61,6 +61,13 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
 
 def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
     try:
+        if not credentials or not credentials.credentials:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Token de acesso requerido",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        
         payload = jwt.decode(credentials.credentials, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
         if username is None:
@@ -74,6 +81,12 @@ def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token inválido",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Erro de autenticação",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
