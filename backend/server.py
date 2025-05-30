@@ -117,8 +117,9 @@ async def login(login_data: LoginRequest):
     }
 
 @app.get("/api/verify-token")
-async def verify_user_token(current_user: str = Depends(verify_token)):
-    return {"username": current_user, "authenticated": True}
+async def verify_user_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    username = verify_token(credentials)
+    return {"username": username, "authenticated": True}
 
 @app.get("/api/dashboard")
 async def dashboard(credentials: HTTPAuthorizationCredentials = Depends(security)):
